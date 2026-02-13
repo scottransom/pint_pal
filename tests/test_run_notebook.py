@@ -3,15 +3,17 @@ from os.path import dirname, join, split, splitext
 from datetime import datetime
 from glob import glob
 import pytest
-from timing_analysis.notebook_runner import run_in_subdir
-
-base_dir = dirname(dirname(__file__))
+import pint_pal
+from pint_pal.notebook_runner import run_template_notebook
+test_dir = dirname(__file__)
+base_dir = dirname(test_dir)
+pint_pal.set_data_root(test_dir)
 
 def config_files():
-    config_files = (glob(join(base_dir, 'configs/B*.nb.yaml'))
-                     + glob(join(base_dir, 'configs/J*.nb.yaml'))
-                     + glob(join(base_dir, 'configs/B*.wb.yaml'))
-                     + glob(join(base_dir, 'configs/J*.wb.yaml')))
+    config_files = (glob(join(test_dir, 'configs', 'B*.nb.yaml'))
+                     + glob(join(test_dir, 'configs', 'J*.nb.yaml'))
+                     + glob(join(test_dir, 'configs', 'B*.wb.yaml'))
+                     + glob(join(test_dir, 'configs', 'J*.wb.yaml')))
     config_files = sorted(config_files)
     basenames = [splitext(split(filename)[1])[0] for filename in config_files]
     print(config_files)
@@ -38,11 +40,18 @@ def test_run_notebook(config_file, output_dir):
         `pytest -n <workers> tests/test_run_notebook.py`
         <workers> is the number of worker processes to launch (e.g. 4 to use 4 CPU threads)
     """
+    pint_pal.set_data_root(dirname(__file__))
     global_log = join(output_dir, f'test-run-notebook.log')
     with open(global_log, 'a') as f:
-        run_in_subdir(
-            join(base_dir, 'nb_templates/process_v1.2.ipynb'),
+        run_template_notebook(
+            'process_v1.2.ipynb',
             config_file,
-            output_dir,
-            log_status_to = f,
+            output_dir=output_dir,
+            log_status_to=f,
+            transformations = {
+                'write_prenoise': "True",
+                'write_results': "True",
+                'use_existing_noise_dir': "True",
+                'log_to_file': "True",
+            },
         )

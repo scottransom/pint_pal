@@ -1,31 +1,7 @@
-from setuptools import setup, find_packages
-
-with open("README.md", "r") as fh:
-    long_description = fh.read()
+from setuptools import setup
+import versioneer
 
 setup(
-    name="timing_analysis",
-    version="1.0.0",
-    description="NANOGrav Timimg Analysis",
-    author="Joe Swiggum",
-    author_email="swiggumj@gmail.com",
-    url="",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    package_dir={"": "src"},
-    packages=find_packages("src"),
-    install_requires=[
-        'ruamel.yaml',
-        "pint_pulsar>=0.9.1",
-        "enterprise-pulsar>=3.3.2",
-        "enterprise-extensions>=v2.4.1",
-        "pytest",
-        "nbconvert",
-        "ipywidgets>=7.6.3",
-        "pypulse>=0.0.1",
-        "numpy",
-        "weasyprint",
-        "pytest-xdist[psutil]>=2.3.0",
-    ],
-    python_requires=">=3.7",
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
 )
